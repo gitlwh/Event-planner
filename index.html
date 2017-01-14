@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" ng-app='myApp'>
+<head>
+	<meta charset="utf-8">
+	<title>Shen's Event Planner</title>
+
+	<!-- Angular -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+	<!-- load ngmessages -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-messages.js"></script>
+
+	<!-- Firebase -->
+	<script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
+
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
+
+	<!-- AngularFire -->
+	<script src="https://cdn.firebase.com/libs/angularfire/2.0.1/angularfire.min.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.5.3/firebase.js"></script>
+
+	<script src="https://www.gstatic.com/firebasejs/3.5.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.5.2/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.5.2/firebase-database.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.5.2/firebase-messaging.js"></script>
+	
+  	<script src="js/all.js"></script>
+  	<link rel="stylesheet" href="main.css">
+</head>
+<body ng-controller="mainControl as mc">
+	<header>
+			<h1>Shen's Event Planner</h1>
+			<h4>by shen</h4>
+	</header>
+	<div>
+		<div ng-hide="mc.values.logged">
+
+			<button type="button" class="btn" data-toggle="modal" data-target=".signUp">Sign Up</button>
+			<button type="button" class="btn" data-toggle="modal" data-target=".logIn">Log In</button>
+		</div>
+		<div ng-show="mc.values.logged">
+			<button type="button" class="btn" data-toggle="modal" data-target=".createEvent">Create Event</button>
+			<button ng-click="mc.logOut()">Sign Out</button>
+		</div>
+		<section ng-show="mc.values.logged">
+			<article class="eventCard" ng-repeat="everyObject in mc.eventList">
+				<button type="button" ng-click="mc.removeEvent(everyObject)"><span>&times;</span></button>
+				<h3>{{everyObject.topic}}</h3>
+				<h4>{{everyObject.type}}</h4>
+				<p>{{everyObject.host}}</p>
+				<p>{{everyObject.startDate}}</p>
+				<p>{{everyObject.endDate}}</p>
+				<p>{{everyObject.location}}</p>
+				<p>{{everyObject.guest}}</p>
+				<p>{{everyObject.msg}}</p>
+			</article>
+		</section>
+	</div>
+
+	<div class="logIn modal fade" id="logIn" ng-controller='logInControl as lc'>
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4>Log In</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+				</div>
+				<div class="modal-body">
+					<form id="logInForm" name="logInForm" ng-submit="lc.logIn(user)" novalidate>
+						<label for="logInEmail">
+							<span>email:</span>
+							<input type="email" id="logInEmail" name="emailInput" class="form-control" placeholder="your email" required autocomplete="email" ng-model="user.email">
+						</label>
+						<label for="logInPassword">
+							<span>password:</span>
+							<input type="password" id="logInPassword" name="passwordInput" class="form-control" placeholder="input your password" maxlength="20" minlength="6" required ng-model="user.password">
+						</label>
+						<button class="submit" id="logInSubmit" type="submit" value="logIn">logIn</button>
+					</form>
+					
+				</div>
+				<div class="modal-footer">
+					
+				</div>
+				
+			</div>
+		</div>
+			
+	</div>
+
+	<div class="signUp modal fade" id="signUp" ng-controller='signUpControl as sc'>
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">sigh up</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+				</div>
+				<div class="modal-body">
+					<form id="signUpForm" name="signUpForm" ng-submit="sc.signUp(newUser)" autocomplete="on" novalidate>
+						<label for="name">
+							<span>name:</span>
+							<input type="text" id="name" name="name" class="form-control" placeholder="your name" required autocomplete="name" autofocus ng-model="newUser.name">
+						</label>
+						<div class="input-error" ng-messages="signUpForm.name.$error">
+							<div ng-message="required">
+								<p>Input your name please!</p>
+							</div>
+						</div>
+						<label for="signUpEmail">
+							<span>email:</span>
+							<input type="email" id="signUpEmail" name="email" class="form-control" placeholder="your email" required autocomplete="email" ng-model="newUser.email">
+						</label>
+						<div class="input-error" ng-messages="signUpForm.email.$error">
+							<div ng-message="required">
+								<p>Input your email please!</p>
+							</div>
+							<div ng-message="email">
+								<p>Input correct email!</p>
+							</div>
+						</div>
+						<label for="password">
+							<span>password:</span>
+							<input type="password" id="password" name="password" class="form-control" placeholder="input your password" maxlength="20" minlength="6" required ng-model="newUser.password" ng-keyup="sc.checkPassword()">
+							<ul class="input-error">
+								<li ng-hide="sc.charLen">Password should be between 6-20 characters (longer is better)</li>
+								<li ng-hide="sc.symbols">Password needs at least one of these symbols: !, @, #, $, %, ^, &, *</li>
+								<li ng-hide="sc.missNumber">Password needs at least one number</li>
+								<li ng-hide="sc.lowerCase">Password needs at least one lowercase letter</li>
+								<li ng-hide="sc.upperCase">Password needs at least one uppercase letter</li>
+							</ul>
+						</label>
+						<label for="secondPassword">
+							<span>password:</span>
+							<input type="password" id="secondPassword" name="secondPassword" class="form-control" placeholder="input your password again" required ng-model="newUser.secondPassword" ng-keyup="sc.checkSame()">
+							<div ng-hide="sc.passwordMatch">Your input should be same with first input password!</div>
+						</label>
+						<div></div>
+						<label for="birthday">
+							<span>birthday:</span>
+							<input type="date" id="birthday" name="birthday" class="form-control" ng-model="newUser.birthday" placeholder="mm/dd/yyyy">
+						</label>
+						<br>
+						<label>
+							<span>gender:</span>
+							<label for="male">
+								<input type="radio" id="male" name="male" ng-model="newUser.gender" value="male">Male
+							</label>
+							<label for="female">
+								<input type="radio" id="female" name="female" ng-model="newUser.gender" value="female">Female
+							</label>
+						</label>
+						<div ng-show="rCtrl.registerErr">
+							<p>Registration Failed! {{rCtrl.registerErrMsg}}</p>
+						</div>
+						<button class="submit" id="signUpSubmit" type="submit" value="signUp">submit</button>
+					</form>					
+				</div>
+				<div class="modal-footer">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="createEvent modal fade" id="createEvent" ng-controller='eventControl as ec'>
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">Create new events</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+				</div>
+				<div class="modal-body">
+					<form id="eventForm" name="eventForm" ng-submit="ec.submit(eObj)" novalidate>
+						<label for="topic">
+							<span>topic:</span>
+							<input type="text" id="topic" name="topicInput" class="form-control" placeholder="topic of your event" required autofocus ng-model="eObj.topic">
+						</label>
+						<label for="event">
+							<span>Choose an Event</span>
+							<input list="eventList" id="event" class="form-control" placeholder="conference, movie, etc" required ng-model="eObj.type">
+							<datalist id="eventList">
+								<option value="Birthday Party"></option>
+								<option value="Party"></option>
+								<option value="Conference Talk"></option>
+								<option value="Wedding"></option>
+								<option value="Date Night"></option>
+								<option value="Study Session"></option>
+								<option value="Book Club"></option>
+								<option value="Movie"></option>
+							</datalist>
+						</label>
+						<label for="host">
+							<span>Enter Event Host</span>
+							<input id="host" type="text" class="form-control" placeholder="Event Host" required ng-model="eObj.host">
+						</label>
+						<label for="eventStart">
+							<span>Enter Start: date and time</span>
+							<input class="form-control" type="datetime-local" id="eventStart" ng-model="eObj.startDate" required>
+						</label>
+						<label for="eventEnd">
+							<span>Enter End: date and time</span>
+							<input class="form-control" type="datetime-local" id="eventEnd" ng-model="eObj.endDate" required>
+						</label>
+						<label for="locationTextField">
+							<label>Location</label>
+        					<input id="locationTextField" class="form-control googlemap" type="text" size="50" ng-model="eObj.location">
+						</label>
+						<label for="guest">
+							<span>Add Guests</span>
+							<input id="guest" class="guest" type="text" placeholder="Enter guest names (Sam, Tom, Pam, etc.)" ng-model="eObj.guest" required>
+						</label>
+						<label for="message">
+							<p><span class="optional">(Optional)</span> Add a message for guests [140 characters only]</p>
+							<textarea class="form-control" id="message" ng-model="eObj.msg" rows="3" cols="50" maxlength="140"></textarea>
+						</label>
+						<label for="eventSubmit">
+							<input id="eventSubmit" type="submit" value="Create Event">
+						</label>
+					</form>
+				</div>
+					
+			</div>
+		</div>
+	</div>
+
+
+</body>
+</html>
