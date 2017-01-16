@@ -1,6 +1,5 @@
 var gulp = require('gulp'),
-	sass = require('gulp-sass'),
-	autoprefixer = require('gulp-autoprefixer'),
+	browserSync = require('browser-sync').create();/*
 	browserSync = require('browser-sync').create(),
 	eslint = require('gulp-eslint'),
 	concat = require('gulp-concat'),
@@ -12,7 +11,9 @@ var gulp = require('gulp'),
 var jsDir=[
 	'js/*.js'
 ]
-
-gulp.task('default',[],function(){
-	gulp.watch();
+*/
+gulp.task('default',function(){
+	browserSync.init({
+		server: "."
+	});
 })

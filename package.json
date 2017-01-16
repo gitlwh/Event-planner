@@ -1,5 +1,5 @@
 {
-  "name": "shen's meetup",
+  "name": "gitlwh.github.io",
   "version": "1.0.0",
   "description": "Shen's Event Planner",
   "main": "gulpfile.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PatrickO10/meetUp.git"
+    "url": "git+https://gitlwh.github.io"
   },
   "keywords": [
     "event",
@@ -16,10 +16,6 @@
   ],
   "author": "Shen",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/PatrickO10/meetUp/issues"
-  },
-  "homepage": "https://github.com/PatrickO10/meetUp#readme",
   "devDependencies": {
     "browser-sync": "^2.10.0",
     "gulp": "^3.9.0",

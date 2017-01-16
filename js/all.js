@@ -99,7 +99,7 @@
 				startDate:this.event.startDate.toString(),
 				endDate:this.event.endDate.toString(),
 				location:location,
-				guest:this.event.guest,
+				guest:this.event.guest||'',
 				msg:this.event.msg||''
 			}
 			authService.writeNewEvent(this.myEvent);
@@ -119,7 +119,8 @@
 		this.loginError = false;
 		this.loginErrMsg = '';
 
-		this.login = function(formUser) {
+		this.logIn = function(formUser) {
+			alert("login!");
 			this.user = angular.copy(formUser);
 			this.loginErrMsg=authService.loginWithPwd(this.user);
 			if(this.loginErrMsg){
@@ -141,8 +142,8 @@
 						this.loginErrMsg = "Error: " + error.code;
 				}
 			}else{
-				$('#loginForm')[0].reset();
-				$('.login').modal('hide');
+				$('#logInForm')[0].reset();
+				$('.logIn').modal('hide');
 			}
 		};
 
@@ -264,7 +265,9 @@
 			      	gender:user.gender,
 			      	birthday:user.birthday
 			    };
+			    
 			    ref.update(updates);
+			    
 			    loginWithPwd(user);
 			    //add login
 			}).catch(function(error) {
@@ -300,12 +303,11 @@
 		  		guest:eObj.guest,
 		  		msg:eObj.msg
 			    }];*/
-			console.log(updates['/events/' + userObj.uid])
 			var userObj = authObj.$getAuth();
+			console.log("userid:"+userObj.uid);
 			var eventsRef = ref.child('events').child(userObj.uid);
 			var list= $firebaseArray(eventsRef);
-			console.log(list);
-			list.$add(eObj)
+			list.$add(eObj);
 			//console.log(updates['/events/' + userObj.uid])
 		  	//ref.update(updates);
 		}
@@ -349,6 +351,8 @@
 		function getEvent(){
 			var userObj = authObj.$getAuth();
 			var eventsRef = ref.child('events').child(userObj.uid);
+			console.log(userObj);
+			//console.log(eventRef);
 			return $firebaseArray(eventsRef);
 		}
 
