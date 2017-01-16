@@ -60,7 +60,7 @@
 (function(){
 	'use strict';
 	angular.module('myApp.value').factory('whichToShow',function(){
-		alert("running2");
+		//alert("running2");
 		var values={logged:false};
 		return {
 			getVar: function(){
@@ -82,7 +82,7 @@
 	eventControl.$inject=['authService'];
 	function eventControl(authService){
 		function init() {
-			alert("init!");
+			//alert("init!");
             var input = document.getElementById('locationTextField');
             var autocomplete = new google.maps.places.Autocomplete(input);
         }
@@ -120,7 +120,7 @@
 		this.loginErrMsg = '';
 
 		this.logIn = function(formUser) {
-			alert("login!");
+			//alert("login!");
 			this.user = angular.copy(formUser);
 			this.loginErrMsg=authService.loginWithPwd(this.user);
 			if(this.loginErrMsg){
