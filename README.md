@@ -8,7 +8,7 @@ This is the first project for Senior Web Developer Course at [Udacity](https://w
 4. Google's autocomplete places.
 
 ## Website:
-[https://gitlwh.github.io/](https://gitlwh.github.io/)
+[https://gitlwh.github.io/Event-planner/](https://gitlwh.github.io/Event-planner/)
 
 ## Want to run server yourself?
 1. Clone the repository
